@@ -12,7 +12,7 @@ all_files <- list.files(character_location)
 certain_characters <- data.frame()
 
 for (character_file in all_files) {
-  if (startsWith(character_file, "eroded")) {
+  if (startsWith(character_file, "tesseract")) {
     content <- ocr_data(paste0(character_location, '/', character_file), eng)
     if (nrow(content) > 0) {
             matches <- content %>% 
@@ -32,3 +32,6 @@ certain_characters %>%
   group_by(word) %>%
   count() %>%
   View()
+
+certain_characters %>%
+  ggplot() + geom_histogram(aes(confidence))
