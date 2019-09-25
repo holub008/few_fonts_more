@@ -14,16 +14,16 @@ certain_characters <- data.frame()
 
 for (character_file in all_files) {
   if (startsWith(character_file, "tesseract")) {
+    tail <- gsub('tesseract', '', character_file)
     content <- ocr_data(paste0(character_location, '/', character_file), eng)
     if (nrow(content) > 0) {
             matches <- content %>% 
               filter(confidence == max(confidence)) %>%
-              mutate(file=character_file)
+              mutate(file=paste0('mask', tail))
             if (nrow(matches) == 1) {
               certain_characters <- rbind(certain_characters, matches,
                                           stringsAsFactors=FALSE)
             }
-              
     }
   }
 }
