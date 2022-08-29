@@ -1,6 +1,6 @@
 import cv2
 import numpy as np
-
+import pytesseract
 
 #################
 # manually rotate images that aren't 90 degree aligned
@@ -25,7 +25,7 @@ for credit_id, degrees in rotations:
 # also perform some preprocessing (borders + erosion) for tesseract
 #################
 
-n_images = 19
+n_images = 1
 for credit_id in range(1, n_images + 1):
     if not credit_id in completed_rotations:
         filename = "./images/%d.png" % (credit_id,)
@@ -58,8 +58,13 @@ for credit_id in range(1, n_images + 1):
         # since the font letters are so thick, erode to something the model likely understands better
         kernel = np.ones((10, 10), np.uint8)
         # tesseract is also extremely sensitive to background color, it seems, so we flip colors
-        preprocessed_image = cv2.bitwise_not(cv2.erode(bordered_character, kernel, iterations=1))
+        preprocessed_image = cv2.bitwise_not(cv2.erode(bordered_character, kernel, iterations=2))
 
         cv2.imwrite("./images/extracted_characters/tesseract_%d_%d.jpg" % (credit_id, i), preprocessed_image)
         # write the original image mask so that we can recover the font after OCR
         cv2.imwrite("./images/extracted_characters/mask_%d_%d.jpg" % (credit_id, i), binary_roi)
+
+        rgb_roi = cv2.cvtColor(preprocessed_image, cv2.COLOR_BGR2RGB)
+        # ocr_chars = pytesseract.image_to_string(rgb_roi, config='--psm 10 -c tessedit_char_whitelist=ABCDEFGHIJKLMNOPQRSTUVWXYZ')
+        #print(ocr_chars)
+
